@@ -9,6 +9,7 @@ const port = 3000
 const dynamicRequire = (controller) => require(`./src/api/controllers/${controller}.js`)
 const ISLOCAL = true
 
+const {up, down}  = require('./src/db/db')
 
 async function requestListener (req) {
   const routes = generateRoutes(routeConfig)
@@ -50,9 +51,10 @@ async function requestListener (req) {
       body: JSON.stringify(result.json),
     }
   } catch (err) {
+    console.log(err)
     return {
       statusCode: 200,
-      body: JSON.stringify({ test: 's' }),
+      body: err,
     }
   }
 }
@@ -75,6 +77,8 @@ async function lambdaHandler  (event, context, callback) {
 }
 
 async function localServe (){
+  await down()
+  await up()
   http.createServer(async (req, res)=>{
     console.log(req.url)
     if(req.url.endsWith('/docs')){

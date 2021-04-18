@@ -1,3 +1,4 @@
+const {db} = require('../../db/db')
 
 const data = {
   0: {
@@ -11,13 +12,13 @@ async function usersList (req, res) {
 }
 
 async function usersGet (req, res) {
-  const item = data[req.pathParams.id]
-  return { status: 200, json: { ...item } }
+  const users = await db.select().table('users')
+  return { status: 200, json: { users } }
 }
 
 async function usersCreate (req, res) {
-  const id = Object.keys(data).length
-  data[id] = req.data
+  const [id] = await db.insert({ name: req.data.name, email: req.data.email }).table('users').returning('id')
+
 
   return { status: 201, json: { id } }
 }

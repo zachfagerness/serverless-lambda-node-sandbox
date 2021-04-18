@@ -6,14 +6,15 @@
   "browser": "dist/index.ts",
   "scripts": {
     "go": "yarn run build && yarn run deploy",
-    "remote": "curl https://p2xi1u01hf.execute-api.us-east-1.amazonaws.com/dev/users",
+    "remote": "curl https://xxxx.execute-api.us-east-1.amazonaws.com/dev/users",
     "deploy": "serverless deploy",
     "build": "webpack",
     "fix": "eslint --fix --ignore-pattern dist .",
     "local": "yarn run build && serverless invoke local --function hello --path ./misc/lambda-event.txt",
     "start": "webpack -w",
     "watch": "nodemon --watch dist --exec 'node ./dist/index.js'",
-    "run-local": "yarn build & yarn watch"
+    "run-local": "yarn start & yarn watch",
+    "local-db": "psql \"postgresql://postgres:postgres@localhost:5432/postgres\""
   },
   "devDependencies": {
     "@types/node": "^14.14.41",
@@ -24,8 +25,10 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.3.1",
+    "knex": "^0.95.4",
     "nodemon": "^2.0.7",
     "npm-run-all": "^4.1.5",
+    "pg": "^8.6.0",
     "serverless": "^2.35.0",
     "terser-webpack-plugin": "^5.1.1",
     "ts-loader": "^8.1.0",
@@ -34,5 +37,8 @@
     "webpack": "^5.33.2",
     "webpack-cli": "^4.6.0",
     "yaml-loader": "^0.6.0"
+  },
+  "dependencies": {
+    "dotenv": "^8.2.0"
   }
 }

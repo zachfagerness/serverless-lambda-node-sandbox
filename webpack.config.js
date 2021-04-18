@@ -30,6 +30,9 @@ module.exports = {
     libraryTarget: 'umd',
     globalObject: 'this'
   },
+  externals:[
+    /^[a-z\-0-9]+$/
+  ],
   ...isProd && {
     optimization: {
       minimize: true,
