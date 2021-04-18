@@ -6,7 +6,7 @@ const { generateRoutes } = require('./src/api/helpers/generate-routes')
 // const host = 'localhost'
 // const port = 3001
 const dynamicRequire = (controller) => require(`./src/api/controllers/${controller}.js`)
-const ISLOCAL = false
+// const ISLOCAL = false
 // function sendResponse (res) {
 //   return (status, json = null) => {
 //     return {
