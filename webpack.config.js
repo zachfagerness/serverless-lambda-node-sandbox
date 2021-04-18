@@ -1,6 +1,6 @@
 const path = require('path')
 const TerserPlugin = require('terser-webpack-plugin')
-const isProd = true
+const isProd = false
 
 module.exports = {
   entry: './index.js',
