@@ -1,5 +1,6 @@
 
 paths:
+
   /users:
     GET:
       controller: users-controller
@@ -21,8 +22,8 @@ paths:
         - 201
         - 400
         - 404
+
   /users/:id:
-    
     GET:
       controller: users-controller
       operation: usersGet

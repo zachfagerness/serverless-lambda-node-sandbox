@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>API DOCS</title>
     <script>
+        const isLocal = true
+        const host = isLocal ?'http://localhost:10100' :'https://p2xi1u01hf.execute-api.us-east-1.amazonaws.com' + '/dev'
         const request = (endpoint, method, data = {}) =>{
-          return fetch('https://p2xi1u01hf.execute-api.us-east-1.amazonaws.com/dev'+endpoint, {
+          return fetch(host  +endpoint, {
             method,
             ...Object.keys(data).length && { body: JSON.stringify(data) },
             headers:{
@@ -36,7 +38,7 @@
           email: "vv@example.com"
         }))
         .then(()=>request('/users', 'GET'))
-        .then(()=>request('/users/1', 'DELETE'))
+        // .then(()=>request('/users/1', 'DELETE'))
         .then(()=>request('/users', 'GET'))
 
         

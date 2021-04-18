@@ -1,6 +1,6 @@
 const path = require('path')
 const TerserPlugin = require('terser-webpack-plugin')
-const isProd = true
+const isProd = false
 
 module.exports = {
   entry: './index.js',
@@ -30,6 +30,9 @@ module.exports = {
     libraryTarget: 'umd',
     globalObject: 'this'
   },
+  externals:[
+    /^[a-z\-0-9]+$/
+  ],
   ...isProd && {
     optimization: {
       minimize: true,

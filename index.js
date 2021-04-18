@@ -1,67 +1,38 @@
 import routeConfig from './src/api/route-config.yml'
+import http from 'http'
 
 const { findRoute } = require('./src/api/helpers/request-handler')
 const { generateRoutes } = require('./src/api/helpers/generate-routes')
-// const uiServer = require('./docs-server/ui-server')
-// const host = 'localhost'
-// const port = 3001
+import uiServer from './docs-server/ui-server'
+const host = '0.0.0.0'
+const port = 3000
 const dynamicRequire = (controller) => require(`./src/api/controllers/${controller}.js`)
-// const ISLOCAL = false
-// function sendResponse (res) {
-//   return (status, json = null) => {
-//     return {
-//       statusCode: status,
-//       body: JSON.stringify(
-//         json,
-//         null,
-//         2
-//       )
-//     }
-//     // res.setHeader('Content-Type', 'application/json')
-//     // res.setHeader('Access-Control-Allow-Headers', '*')
-//     // res.setHeader('Access-Control-Allow-Origin', '*')
-//     // res.setHeader('Access-Control-Allow-Methods', '*')
+const ISLOCAL = true
 
-//     // res.writeHead(status)
-
-//     // if (json) {
-//     //   res.end(JSON.stringify(json))
-//     // } else {
-//     //   res.end()
-//     // }
-//   }
-// }
+const {up, down}  = require('./src/db/db')
 
 async function requestListener (req) {
-  // console.log(req, res)
-
-  // const send = sendResponse(res)
   const routes = generateRoutes(routeConfig)
 
   if (req.method === 'OPTIONS') {
     return {
       statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Headers': '*',
-        'Access-Control-Allow-Methods': '*',
-        'Access-Control-Allow-Origin': '*'
-      },
       body: 'err3',
-      isBase64Encoded: false
     }
   }
-  const body = req.data
+  let body = req.data
 
-  // if (ISLOCAL && !body && (req.method === 'POST' || req.method === 'PATCH')) {
-  //   body = await new Promise((resolve) => {
-  //     const chunks = []
-  //     req.on('data', chunk => chunks.push(chunk))
-  //     req.on('end', () => {
-  //       const data = Buffer.concat(chunks)
-  //       resolve(JSON.parse(data.toString()))
-  //     })
-  //   })
-  // }
+  if (ISLOCAL && !body && (req.method === 'POST' || req.method === 'PATCH')) {
+    body = await new Promise((resolve) => {
+      const chunks = []
+      req.on('data', chunk => chunks.push(chunk))
+      req.on('end', () => {
+        const data = Buffer.concat(chunks)
+        resolve(JSON.parse(data.toString()))
+      })
+      
+    })
+  }
 
   let response
   try {
@@ -69,13 +40,7 @@ async function requestListener (req) {
   } catch (err) {
     return {
       statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Headers': '*',
-        'Access-Control-Allow-Methods': '*',
-        'Access-Control-Allow-Origin': '*'
-      },
       body: req.url + ' ' + err.toString(),
-      isBase64Encoded: false
     }
   }
 
@@ -83,35 +48,64 @@ async function requestListener (req) {
     const result = await dynamicRequire(response.controller)[response.operation]({ ...response, data: body })
     return {
       statusCode: result.status,
-      headers: {
-        'Access-Control-Allow-Headers': '*',
-        'Access-Control-Allow-Methods': '*',
-        'Access-Control-Allow-Origin': '*'
-      },
       body: JSON.stringify(result.json),
-      isBase64Encoded: false
     }
   } catch (err) {
+    console.log(err)
     return {
       statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Headers': '*',
-        'Access-Control-Allow-Methods': '*',
-        'Access-Control-Allow-Origin': '*'
-      },
-      body: JSON.stringify({ test: 's' }),
-      isBase64Encoded: false
+      body: err,
     }
   }
 }
 
-const serve = async (event, context, callback) => {
+async function lambdaHandler  (event, context, callback) {
   const res = await requestListener({
     method: event.requestContext.httpMethod,
     url: event.requestContext.path.replace('/dev', ''),
     data: event.body ? JSON.parse(event.body) : {}
   })
-  callback(null, res)
+  callback(null, {
+    ...res,
+    headers: {
+      'Access-Control-Allow-Headers': '*',
+      'Access-Control-Allow-Methods': '*',
+      'Access-Control-Allow-Origin': '*'
+    },
+    isBase64Encoded: false
+  })
 }
 
-export default serve
+async function localServe (){
+  await down()
+  await up()
+  http.createServer(async (req, res)=>{
+    console.log(req.url)
+    if(req.url.endsWith('/docs')){
+      uiServer.serverListener(req, res)
+      return
+    }
+    const response = await requestListener(req)
+    sendResponse(res, response.statusCode, response.body)
+  }).listen(port, host, ()=>{
+    console.log(`API server is rdudnndindg on http://${host}:${port}`)
+  })
+} 
+
+function sendResponse (res, status, json = null) {
+  res.setHeader('Content-Type', 'application/json')
+  res.setHeader('Access-Control-Allow-Headers', '*')
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', '*')
+
+  res.writeHead(status)
+  json ? res.end(json) : res.end()
+}
+
+if(ISLOCAL){
+  localServe()
+}
+
+export {
+  lambdaHandler
+}
