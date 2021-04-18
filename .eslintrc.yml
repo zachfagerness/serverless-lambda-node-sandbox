@@ -9,7 +9,7 @@ parserOptions:
   sourceType: module
 plugins:
   - '@typescript-eslint'
-rules: {
+rules: 
   no-constant-condition: 0,
   camelcase: 0
-}
+

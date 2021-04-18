@@ -10,7 +10,7 @@
     "build": "webpack",
     "fix": "eslint --fix --ignore-pattern dist .",
     "start": "webpack -w",
-    "local": "yarn run build && serverless invoke local --function hello --path ./lambda-event.txt"
+    "local": "yarn run build && serverless invoke local --function hello --path ./misc/lambda-event.txt"
   },
   "devDependencies": {
     "@types/node": "^14.14.41",
