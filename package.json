@@ -6,11 +6,12 @@
   "browser": "dist/index.ts",
   "scripts": {
     "go": "yarn run build && yarn run deploy",
+    "remote": "curl https://xxxxxx.execute-api.us-east-1.amazonaws.com/dev/users -v",
     "deploy": "serverless deploy",
     "build": "webpack",
     "fix": "eslint --fix --ignore-pattern dist .",
-    "start": "webpack -w",
-    "local": "yarn run build && serverless invoke local --function hello --path ./misc/lambda-event.txt"
+    "local": "yarn run build && serverless invoke local --function hello --path ./misc/lambda-event.txt",
+    "destroy": "serverless remove"
   },
   "devDependencies": {
     "@types/node": "^14.14.41",
