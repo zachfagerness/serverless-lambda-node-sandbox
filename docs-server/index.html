@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>API DOCS</title>
+    <script>
+        const request = (endpoint, method, data = {}) =>{
+          return fetch('https://p2xi1u01hf.execute-api.us-east-1.amazonaws.com/dev'+endpoint, {
+            method,
+            ...Object.keys(data).length && { body: JSON.stringify(data) },
+            headers:{
+              'Content-Type': 'application/json'
+            },
+          })
+            .then((e)=>{
+                if(e.status === 200 || e.status === 201){
+                    return e.json().then(data=>({method, status: e.status, data}))
+                }else{
+                  return {method, status: e.status}
+                }
+            })
+            .then(data=>{
+                console.log(data)
+            })
+        }
+        
+        request('/users', 'GET')
+        .then(()=>request('/users', 'POST', {
+          name: "xxx",
+          email: "cc@example.com"
+        }))
+        .then(()=>request('/users', 'GET'))
+        .then(()=>request('/users/1', 'PATCH', {
+          name: "vv name",
+          email: "vv@example.com"
+        }))
+        .then(()=>request('/users', 'GET'))
+        .then(()=>request('/users/1', 'DELETE'))
+        .then(()=>request('/users', 'GET'))
+
+        
+        
+        
+    </script>
+  </head>
+  <body>
+    <div id="root">
+        test
+    </div>
+  </body>
+</html>
