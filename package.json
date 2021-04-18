@@ -14,7 +14,8 @@
     "start": "webpack -w",
     "watch": "nodemon --watch dist --exec 'node ./dist/index.js'",
     "run-local": "yarn start & yarn watch",
-    "local-db": "psql \"postgresql://postgres:postgres@localhost:5432/postgres\""
+    "local-db": "psql \"postgresql://postgres:postgres@localhost:5432/postgres\"",
+    "destroy": "serverless remove"
   },
   "devDependencies": {
     "@types/node": "^14.14.41",
